@@ -466,13 +466,15 @@ public class HueBridge {
 				final JSONObject datastore = response.get(0);
 				if(datastore.has("error")) {
 					throw new HueCommException(datastore.getJSONObject("error"));
+				}else{
+					authenticated = true;
+					initialSyncDone = true;
 				}
 				if(datastore.has("config") && datastore.has("lights") && datastore.has("groups")) {
 					parseConfig(datastore.getJSONObject("config"));
 					parseLights(datastore.getJSONObject("lights"));
 					parseGroups(datastore.getJSONObject("groups"));
 					this.setUsername(username);
-					initialSyncDone = true;
 				} else {
 					throw new HueCommException("Incomplete response. Missing at least one of config/lights/groups");
 				}
@@ -543,6 +545,9 @@ public class HueBridge {
 				if(e instanceof HueCommException) {
 					throw e;
 				} else {
+					System.out.println("GROUPS JSON: " + groupsJson.toString());
+					log.severe("GROUPS JSON: " + groupsJson.toString());
+					log.severe("EXCEPTION TYPE: " + e.getMessage());
 					throw new HueCommException("Groups result parsing failed. Probably some unexpected format?", e);
 				}
 			}
